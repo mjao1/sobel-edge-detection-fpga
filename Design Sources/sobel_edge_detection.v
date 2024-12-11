@@ -25,13 +25,13 @@ module sobel_edge_detection(
     input rst,
     input [7:0] pixel_in,
     input [7:0] threshold,
-    input [8:0] x_pos,
-    input [7:0] y_pos,
+    input [9:0] x_pos,
+    input [9:0] y_pos,
     input valid_in,
     output reg [7:0] pixel_out
 );
     // Parameters
-    localparam IMG_WIDTH = 320;
+    localparam IMG_WIDTH = 960;
     
     // Line buffers
     (* ram_style = "block" *) reg [7:0] line_buffer_1 [0:IMG_WIDTH-1];
@@ -44,8 +44,8 @@ module sobel_edge_detection(
     
     // Pipeline control
     reg [2:0] valid_pipeline;
-    reg [8:0] x_pipeline [0:2];
-    reg [7:0] y_pipeline [0:2];
+    reg [9:0] x_pipeline [0:2];
+    reg [9:0] y_pipeline [0:2];
     
     integer i;
     

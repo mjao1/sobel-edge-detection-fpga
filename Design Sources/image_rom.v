@@ -22,12 +22,12 @@
 
 module image_rom (
     input wire clk,
-    input wire [16:0] addr,
+    input wire [18:0] addr,
     output reg [7:0] dout
 );
 
     // Declare memory array with block ram
-    (* rom_style = "block" *) reg [7:0] mem [0:76799];
+    (* rom_style = "block" *) reg [7:0] mem [0:518399];
 
     // Initialize memory
     initial begin

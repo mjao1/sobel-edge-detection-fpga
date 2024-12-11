@@ -29,20 +29,19 @@ module vga_controller(
     output reg vsync,
     output reg display_area
 );
-    // VGA timing parameters for 640x480 60Hz with 25MHz pixel clock
-    parameter H_PIXELS = 640;
-    parameter H_FP = 16;
-    parameter H_PULSE = 96;
-    parameter H_BP = 48;
-    parameter V_LINES = 480;
-    parameter V_FP = 10;
-    parameter V_PULSE = 2;
-    parameter V_BP = 33;
+    parameter H_PIXELS = 960;  
+    parameter H_FP = 48;      
+    parameter H_PULSE = 96;   
+    parameter H_BP = 144;       
+    parameter V_LINES = 540; 
+    parameter V_FP = 3;      
+    parameter V_PULSE = 5;     
+    parameter V_BP = 14;  
     
     parameter H_TOTAL = H_PIXELS + H_FP + H_PULSE + H_BP;
     parameter V_TOTAL = V_LINES + V_FP + V_PULSE + V_BP;
     
-    // Horizontal Counter
+    // Horizontal counter
     always @(posedge clk or posedge rst) begin
         if (rst)
             h_cnt <= 0;
@@ -52,7 +51,7 @@ module vga_controller(
             h_cnt <= h_cnt + 1;
     end
     
-    // Vertical Counter
+    // Vertical counter
     always @(posedge clk or posedge rst) begin
         if (rst)
             v_cnt <= 0;

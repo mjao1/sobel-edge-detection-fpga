@@ -31,16 +31,15 @@ module edge_detection_top(
     output hsync,
     output vsync
 );
-    localparam IMG_WIDTH = 320;
-    localparam IMG_HEIGHT = 240;
-    localparam H_OFFSET = 160;
-    localparam V_OFFSET = 120;
+    localparam IMG_WIDTH = 960;
+    localparam IMG_HEIGHT = 540;
     
     // Clock generation
-    wire clk_25MHz;
+    wire clk_50MHz;
     wire clk_locked;
+    
     clk_wiz_0 clk_wiz_inst (
-        .clk_out1(clk_25MHz),
+        .clk_out1(clk_50MHz),
         .clk_in1(clk_100MHz),
         .reset(rst),
         .locked(clk_locked)
@@ -48,11 +47,11 @@ module edge_detection_top(
 
     // VGA signals
     wire [10:0] h_cnt;
-    wire [9:0] v_cnt;
+    wire [10:0] v_cnt;
     wire display_area;
     
     vga_controller vga_inst (
-        .clk(clk_25MHz),
+        .clk(clk_50MHz),
         .rst(rst),
         .h_cnt(h_cnt),
         .v_cnt(v_cnt),
@@ -61,10 +60,10 @@ module edge_detection_top(
         .display_area(display_area)
     );
 
-    // Control Unit
+    // Control unit
     wire [7:0] threshold;
     control_unit control_inst (
-        .clk(clk_25MHz),
+        .clk(clk_50MHz),
         .rst(rst),
         .switches(switches),
         .btn_reset(btn_reset),
@@ -72,27 +71,25 @@ module edge_detection_top(
     );
 
     // Image address generation
-    reg [8:0] x_cnt;
-    reg [7:0] y_cnt;
-    wire active_window;
+    reg [9:0] x_cnt;
+    reg [9:0] y_cnt;
     wire in_image_area;
     
-    assign in_image_area = (h_cnt >= H_OFFSET && h_cnt < H_OFFSET + IMG_WIDTH &&
-                           v_cnt >= V_OFFSET && v_cnt < V_OFFSET + IMG_HEIGHT);
+    assign in_image_area = display_area;
     
     // Address calculation
-    wire [16:0] read_addr;
+    wire [18:0] read_addr;
     assign read_addr = y_cnt * IMG_WIDTH + x_cnt;
     
     // Pixel position tracking
-    always @(posedge clk_25MHz) begin
+    always @(posedge clk_50MHz) begin
         if (rst) begin
             x_cnt <= 0;
             y_cnt <= 0;
         end else if (in_image_area) begin
-            if (x_cnt == IMG_WIDTH-1) begin
+            if (x_cnt == IMG_WIDTH - 1) begin
                 x_cnt <= 0;
-                if (y_cnt == IMG_HEIGHT-1)
+                if (y_cnt == IMG_HEIGHT - 1)
                     y_cnt <= 0;
                 else
                     y_cnt <= y_cnt + 1;
@@ -102,11 +99,11 @@ module edge_detection_top(
         end
     end
 
-    // Image ROM with registered output
+    // Image ROM
     wire [7:0] pixel_in;
-    reg [16:0] rom_addr_reg;
+    reg [18:0] rom_addr_reg;
     
-    always @(posedge clk_25MHz) begin
+    always @(posedge clk_50MHz) begin
         if (in_image_area)
             rom_addr_reg <= read_addr;
         else
@@ -114,7 +111,7 @@ module edge_detection_top(
     end
     
     image_rom rom_inst (
-        .clk(clk_25MHz),
+        .clk(clk_50MHz),
         .addr(rom_addr_reg),
         .dout(pixel_in)
     );
@@ -122,7 +119,7 @@ module edge_detection_top(
     // Edge detection with synchronous reset
     wire [7:0] pixel_out;
     sobel_edge_detection sobel_inst (
-        .clk(clk_25MHz),
+        .clk(clk_50MHz),
         .rst(rst),
         .pixel_in(pixel_in),
         .threshold(threshold),
@@ -137,7 +134,7 @@ module edge_detection_top(
     reg [2:0] output_delay;
     reg display_valid;
     
-    always @(posedge clk_25MHz) begin
+    always @(posedge clk_50MHz) begin
         if (rst) begin
             vga_red_reg <= 0;
             vga_green_reg <= 0;
