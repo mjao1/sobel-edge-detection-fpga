@@ -12,7 +12,7 @@ module edge_detection_top(
     output vsync
 );
     localparam IMG_WIDTH = 960;
-    localparam IMG_HEIGHT = 540;
+    localparam IMG_HEIGHT = 720;
     
     // Clock generation
     wire clk_50MHz;
@@ -30,7 +30,7 @@ module edge_detection_top(
     wire [10:0] v_cnt;
     wire display_area;
     
-    vga_controller vga_inst (
+    vga_controller #(.H_PIXELS(IMG_WIDTH), .V_LINES(IMG_HEIGHT)) vga_inst (
         .clk(clk_50MHz),
         .rst(rst),
         .h_cnt(h_cnt),

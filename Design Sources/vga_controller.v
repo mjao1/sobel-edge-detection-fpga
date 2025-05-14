@@ -13,7 +13,7 @@ module vga_controller(
     parameter H_FP = 48;      
     parameter H_PULSE = 96;   
     parameter H_BP = 144;       
-    parameter V_LINES = 540; 
+    parameter V_LINES = 720; 
     parameter V_FP = 3;      
     parameter V_PULSE = 5;     
     parameter V_BP = 14;  

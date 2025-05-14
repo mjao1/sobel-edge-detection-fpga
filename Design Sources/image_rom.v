@@ -7,7 +7,7 @@ module image_rom (
 );
 
     // Declare memory array with block ram
-    (* rom_style = "block" *) reg [7:0] mem [0:518399];
+    (* rom_style = "block" *) reg [7:0] mem [0:691199];
 
     // Initialize memory
     initial begin
